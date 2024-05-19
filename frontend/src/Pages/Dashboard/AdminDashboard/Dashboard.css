@@ -1,0 +1,41 @@
+.header__title {
+    font-weight: bold;
+    font-size: 32px;
+    padding: 10px 20px;
+    color: rgb(181, 101, 29);
+}
+
+.card__list {
+    display: flex;
+    padding: 10px 20px;
+    justify-content: space-between;
+}
+
+.card__container {
+    min-width: 250px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 1px 2px 5px black;
+    background-color: rgb(181, 101, 29);
+    color: white;
+    text-align: center;
+}
+
+
+.card__header {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.card__body {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.chart__container {
+    border: 1px solid black;
+    margin: 10px 20px;
+    min-height: 350px;
+    margin-top: 50px;
+    border-radius: 4px;
+}
