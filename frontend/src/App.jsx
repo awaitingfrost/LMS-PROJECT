@@ -48,7 +48,7 @@ function App() {
         } />
 
 
-        <Route path='/signin' element={<Signin />} >
+        <Route path='/signin' element={<Signin setToast={setToast} setToastMessage={setToastMessage} />} >
         </Route>
         {/* <Route exact path='/dashboard@member'> */}
         {/* {user ? (user.isAdmin === false ? <MemberDashboard /> : <Link to='/' />) : <Link to='/' />} */}
@@ -87,9 +87,10 @@ function App() {
       </Routes>
       <Snackbar
         open={toastOpen}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         onClose={handleToast}
         message={toastMessage}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
     </div>
   );

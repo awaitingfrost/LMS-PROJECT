@@ -2,7 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Bookimage from "../../../../assets/images/Books.jpg"
-
+import '../AdminDashboard.css'
 
 const BookDetails = () => {
   const { id } = useParams()
@@ -26,20 +26,31 @@ const BookDetails = () => {
 
 
   return (
-    <div>
-      <img
-        src={bookDetails?.book_image ?? Bookimage}
-        alt="Books"
-        width={'20%'}
-        height={'100%'}
-      ></img>
-      <div>
-        <p className='font-extrabold text-4xl'>{bookDetails?.bookName}</p>
-        <p>{bookDetails?.author} </p>
-      </div>
-      <h1>Description</h1>
-      <p>{bookDetails?.bookSummary}</p>
-    </div>
+    <>
+      <p className="dashboard-option-title">Books List</p>
+      <div className="dashboard-title-line"></div>
+      <div className='bookDetails'>
+        <img
+          src={bookDetails?.book_image ?? Bookimage}
+          alt="Books"
+          width={'20%'}
+          height={'100%'}
+        ></img>
+        <div className='ml-4'>
+          <p >
+            <span className='bookTitle'>  Book Name :</span> <span className='book-name'>{bookDetails?.bookName}</span></p>
+          <p className='my-3'> <span className='bookTitle'>Author :</span> <span className='book-name'>{bookDetails?.author}</span> </p>
+          <p >
+            <span className='bookTitle'>  Copies Avaliable :</span> <span className='book-name'>{bookDetails?.bookCountAvailable}</span></p>
+          <p className='my-3' >
+            <span className='bookTitle'>  Publisher :</span> <span className='book-name'>{bookDetails?.publisher}</span></p>
+        </div>
+        <div className='desc'>
+          <p className='bookTitle'>Summary:</p>
+          <p>{bookDetails?.bookSummary ?? 'No Book Summary'}</p>
+        </div>
+      </div >
+    </>
   )
 }
 

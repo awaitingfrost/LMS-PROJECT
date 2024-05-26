@@ -9,7 +9,7 @@ function WelcomeBox() {
             <p className='welcome-title'>WELCOME TO LIBRARY</p>
             <p className='welcome-message'>Feed Your Brain<br />
                 <span className='welcome-submessage'>Grab A Book To Read</span></p>
-            <Link to={'/signin'}><Button variant='contained' size='large'>Sign In</Button></Link>
+            <Link to={'/signin'}><button className='wel-btn' >Sign In</button></Link>
         </div>
     )
 }

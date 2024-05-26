@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { redirect, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Signin.css';
 import axios from 'axios';
 import { AuthContext } from '../Context/AuthContext.js';
 
-function Signin() {
+function Signin({ setToastMessage, setToast }) {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +17,9 @@ function Signin() {
     dispatch({ type: 'LOGIN_START' });
     try {
       const res = await axios.post(`${API_URL}api/auth/signin`, postData);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
+      await dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
+      setToast(true)
+      setToastMessage('Login Successfully 🎉')
       if (res.data.isAdmin) {
         return navigate('/admin');
       } else {
@@ -55,12 +57,12 @@ function Signin() {
           </div>
           <div className="signin-fields">
             <label htmlFor={'loginId'}>
-              <b>{'Email or Admission Id'}</b>
+              <b>{'Email'}</b>
             </label>
             <input
               className="signin-textbox"
               type="text"
-              placeholder={'Enter Login Id'}
+              placeholder={'Enter Email'}
               name={'loginId'}
               required
               onChange={(e) => {

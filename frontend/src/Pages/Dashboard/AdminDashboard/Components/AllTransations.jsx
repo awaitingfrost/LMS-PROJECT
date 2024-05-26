@@ -17,7 +17,8 @@ const AllTransations = ({ setToastMessage, setToast }) => {
     const fetchAllUsers = async () => {
       try {
         const response = await axios.get(`${API_URL}api/users/allusers`);
-        setAllUsers([...response.data, { _id: 'none', userFullName: 'All' }])
+        const data = response.data.filter(d => !d.isAdmin)
+        setAllUsers([...data, { _id: 'none', userFullName: 'All' }])
       } catch (err) {
         console.error("Failed to fetch books:", err);
       }
@@ -78,7 +79,17 @@ const AllTransations = ({ setToastMessage, setToast }) => {
               userId
             }
           })
-          setRecentTransactions(response.data.slice(0, 10))
+          const value = response.data.splice(0, 15).map(e => ({
+            _id: e._id,
+            bookName: e.bookId.bookName,
+            borrowerName: e.borrowerId.userFullName,
+            transactionDate: e.createdAt,
+            returnedDate: e.returnDate,
+            borrowerId: e.borrowerId._id,
+            transactionType: e.transactionType
+          })
+          )
+          setRecentTransactions(value)
         } catch (err) {
           console.error("Failed to fetch books:", err);
         }
@@ -138,13 +149,13 @@ const AllTransations = ({ setToastMessage, setToast }) => {
               <th>Actions</th>
             </tr>
             {
-              recentTransactions.map((transaction, index) => {
+              recentTransactions?.map((transaction, index) => {
                 return (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{transaction.bookName}</td>
-                    <td>{transaction.borrowerName}</td>
-                    <td>{transaction.transactionDate.slice(0, 10)}</td>
+                    <td>{transaction?.bookName}</td>
+                    <td>{transaction?.borrowerName}</td>
+                    <td>{transaction?.transactionDate?.slice(0, 10)}</td>
                     <td>
                       {transaction?.returnedDate ? new Date(transaction.returnedDate).toISOString().split('T')[0] : 'Not returned yet'}
                     </td>

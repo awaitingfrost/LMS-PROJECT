@@ -64,16 +64,17 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
                 await axios.post(API_URL + "api/auth/register", userData)
                 setToastMessage('Member Added Successfully 🎉')
                 setToast(true)
-                setOpen(false)
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
 
             }
             catch (err) {
-                setToastMessage('Failed Creating Member🎉')
+                setToastMessage('Failed Creating Member')
                 setToast(true)
-                setOpen(false)
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             }
         }
         else {
@@ -102,7 +103,10 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
                 <label className="addmember-form-label" htmlFor={userType === "Student" ? "admissionId" : "employeeId"}>{userType === "Student" ? "Admission Id" : "Employee Id"}<span className="required-field">*</span></label><br />
                 <input className="addmember-form-input" type="text" value={userType === "Student" ? admissionId : employeeId} required onChange={(e) => { userType === "Student" ? setAdmissionId(e.target.value) : setEmployeeId(e.target.value) }}></input><br />
 
-                <div className='semanticdropdown'>
+
+                {userType === "Staff" && <div className='semanticdropdown'>
+                    <label className="addmember-form-label" htmlFor="userFullName">Is Admin<span className="required-field">*</span></label><br />
+
                     <Dropdown
                         placeholder='Is Admin'
                         fluid
@@ -110,7 +114,7 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
                         options={adminOption}
                         onChange={(event, data) => setIsAdmin(data.value)}
                     />
-                </div>
+                </div>}
 
                 <label className="addmember-form-label" htmlFor="mobileNumber">Mobile Number<span className="required-field">*</span></label><br />
                 <input className="addmember-form-input" type="text" value={mobileNumber} required onChange={(e) => setMobileNumber(e.target.value)}></input><br />

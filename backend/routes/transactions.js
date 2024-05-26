@@ -13,7 +13,7 @@ const router = express.Router()
 router.get("/userid/all-transactions", async (req, res) => {
     const userId = req.query.userId;
     try {
-        if (userId != 'none') {
+        if (userId !== 'none') {
             const userTransactions = await BookTransaction.find({ borrowerId: userId }).sort({ _id: -1 })
                 .populate('bookId')
                 .populate('borrowerId');

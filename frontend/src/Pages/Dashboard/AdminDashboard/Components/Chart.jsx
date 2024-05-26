@@ -1,55 +1,39 @@
-import React, { PureComponent } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const data = [
-  {
-    name: 'Sunday',
-    transaction: 4000,
-    books: 10,
-    amt: 2400,
-  },
-  {
-    name: 'Monday',
-    transaction: 3000,
-    books: 13,
-    amt: 2210,
-  },
-  {
-    name: 'Tuesday',
-    transaction: 2000,
-    books: 14,
-    amt: 2290,
-  },
-  {
-    name: 'Wednesday',
-    transaction: 8,
-    books: 30,
-    amt: 2000,
-  },
-  {
-    name: 'Thrusday',
-    transaction: 1890,
-    books: 20,
-    amt: 2181,
-  },
-  {
-    name: 'Friday',
-    transaction: 2390,
-    books: 18,
-    amt: 2500,
-  },
-  {
-    name: 'Saturday',
-    transaction: 3490,
-    books: 13,
-    amt: 2100,
-  },
-];
 
-export default class Example extends PureComponent {
 
-  render() {
-    return (
+const Chart = () => {
+  const [data, setData] = useState([])
+
+  const API_URL = 'https://backend-hhb9.onrender.com/';
+
+
+  const fetchAllBooks = async () => {
+    try {
+      const response = await axios.get(`${API_URL}api/books/allbooks`);
+      const chartData = response.data.slice(0, 15).map(book => {
+        return {
+          name: book.bookName,
+          transaction: book.transactions.length,
+          books: book.totalCopies
+        }
+      })
+
+      setData(chartData)
+    } catch (err) {
+      console.error("Failed to fetch books:", err);
+    }
+  }
+
+  useEffect(() => {
+
+    fetchAllBooks()
+  }, []);
+
+  return (
+    <div>
       <ResponsiveContainer width="100%" height={380}>
         <LineChart
           width={500}
@@ -71,6 +55,8 @@ export default class Example extends PureComponent {
           <Line type="monotone" dataKey="books" stroke="#82ca9d" />
         </LineChart>
       </ResponsiveContainer>
-    );
-  }
+    </div>
+  )
 }
+
+export default Chart

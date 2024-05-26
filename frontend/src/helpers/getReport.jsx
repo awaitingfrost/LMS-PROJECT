@@ -67,9 +67,9 @@ const MyDocument = ({ reportData, reportTitle, tableHeader, type }) => (
           {type === 'transaction' && reportData?.map((row, index) => (
             <View style={styles.tableRow} key={index}>
               {<View style={styles.tableCol}><Text style={styles.tableCell}>{index + 1}</Text></View>}
-              {<View style={styles.tableCol}><Text style={styles.tableCell}>{row.bookName}</Text></View>}
-              {<View style={styles.tableCol}><Text style={styles.tableCell}>{row.borrowerName}</Text></View>}
-              {<View style={styles.tableCol}><Text style={styles.tableCell}>{row.transactionDate.slice(0, 10)}</Text></View>}
+              {<View style={styles.tableCol}><Text style={styles.tableCell}>{row?.bookName}</Text></View>}
+              {<View style={styles.tableCol}><Text style={styles.tableCell}>{row?.borrowerName}</Text></View>}
+              {<View style={styles.tableCol}><Text style={styles.tableCell}>{row?.transactionDate?.slice(0, 10)}</Text></View>}
               {<View style={styles.tableCol}><Text style={styles.tableCell}>{row?.returnedDate ? new Date(row.returnedDate).toISOString().split('T')[0] : 'Not returned yet'}</Text></View>}
             </View>
           ))}

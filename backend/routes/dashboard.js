@@ -25,7 +25,8 @@ router.get("/dashboard-counts", async (req, res) => {
 
     const totalCategories = await BookCategory.countDocuments();
     const totalAuther = await Book.distinct("author");
-    const totalReserved = await BookTransaction.find({ transactionType: "Issued" });
+    const totalIssued = await BookTransaction.find({ transactionType: "Issued" });
+    const totalReserved = await BookTransaction.find({ transactionType: "Reserved" });
 
     const data = {
       book: Books,
@@ -34,7 +35,8 @@ router.get("/dashboard-counts", async (req, res) => {
       fine: totalFine,
       categories: totalCategories,
       auther: totalAuther.length,
-      issued: totalReserved.length
+      issued: totalIssued.length,
+      reserved: totalReserved.length
     }
 
     return res.status(200).json(data);

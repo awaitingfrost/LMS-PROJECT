@@ -42,7 +42,8 @@ function Allbooks({ setToastMessage, setToast }) {
     const fetchAllUsers = async () => {
       try {
         const response = await axios.get(`${API_URL}api/users/allusers`);
-        setAllUsers([...response.data, { _id: 'none', userFullName: 'All' }])
+        const data = response.data.filter(d => d.isAdmin);
+        setAllUsers([...data, { _id: 'none', userFullName: 'All' }])
       } catch (err) {
         console.error("Failed to fetch books:", err);
       }
