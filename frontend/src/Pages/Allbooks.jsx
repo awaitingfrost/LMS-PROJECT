@@ -34,7 +34,7 @@ const BookCard = ({ _id, bookName, author, alternateTitle, book_image }) => {
 
 function Allbooks({ setToastMessage, setToast }) {
   const [allBooks, setAllBooks] = useState([]);
-  const API_URL = 'http://localhost:5000/';
+  const API_URL = 'https://backend-hhb9.onrender.com/';
 
   const [allUserList, setAllUsers] = useState();
 
