@@ -23,6 +23,7 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
     const [age, setAge] = useState(null)
     const [dob, setDob] = useState(null)
     const [dobString, setDobString] = useState(null)
+    const [isAdmin, setIsAdmin] = useState(false)
 
 
     const genderTypes = [
@@ -33,6 +34,11 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
     const userTypes = [
         { value: 'Staff', text: 'Staff' },
         { value: 'Student', text: 'Student' }
+    ]
+
+    const adminOption = [
+        { value: true, text: 'Yes' },
+        { value: false, text: 'No' }
     ]
 
     //Add a Member
@@ -51,7 +57,8 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
                 address: address,
                 mobileNumber: mobileNumber,
                 email: email,
-                password: password
+                password: password,
+                isAdmin: isAdmin
             }
             try {
                 await axios.post(API_URL + "api/auth/register", userData)
@@ -95,6 +102,16 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
                 <label className="addmember-form-label" htmlFor={userType === "Student" ? "admissionId" : "employeeId"}>{userType === "Student" ? "Admission Id" : "Employee Id"}<span className="required-field">*</span></label><br />
                 <input className="addmember-form-input" type="text" value={userType === "Student" ? admissionId : employeeId} required onChange={(e) => { userType === "Student" ? setAdmissionId(e.target.value) : setEmployeeId(e.target.value) }}></input><br />
 
+                <div className='semanticdropdown'>
+                    <Dropdown
+                        placeholder='Is Admin'
+                        fluid
+                        selection
+                        options={adminOption}
+                        onChange={(event, data) => setIsAdmin(data.value)}
+                    />
+                </div>
+
                 <label className="addmember-form-label" htmlFor="mobileNumber">Mobile Number<span className="required-field">*</span></label><br />
                 <input className="addmember-form-input" type="text" value={mobileNumber} required onChange={(e) => setMobileNumber(e.target.value)}></input><br />
 
@@ -136,7 +153,7 @@ function AddMember({ setToastMessage, setToast, setOpen }) {
                 </Button>
 
             </form>
-        </div>
+        </div >
     )
 }
 
