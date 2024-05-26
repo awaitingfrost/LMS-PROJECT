@@ -5,7 +5,7 @@
 
   position: relative;
   background-image: url(https://img.freepik.com/free-vector/books-seamless-pattern-doodle-outline-textbooks_107791-9584.jpg?w=740&t=st=1705542613~exp=1705543213~hmac=673f8dd2969e5dffd4c350a95972fce9f1743d8c3d594e7e102a465af262f610);
-  
+
 }
 
 a {
@@ -29,7 +29,7 @@ form {
   padding: 30px;
 }
 
-.error-message{
+.error-message {
   color: red;
   font-weight: bold;
 }
@@ -54,7 +54,7 @@ form {
   margin: 25px 0;
 }
 
-.persontype-question{
+.persontype-question {
   display: flex;
   align-items: center;
   justify-content: space-between;

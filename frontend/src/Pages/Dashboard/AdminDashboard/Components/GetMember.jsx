@@ -47,6 +47,8 @@ function GetMember() {
 
     return (
         <div>
+            <p className='dashboard-option-title'>Get Member Details</p>
+            <div className="dashboard-title-line"></div>
             <div className='semanticdropdown getmember-dropdown'>
                 <Dropdown
                     placeholder='Select Member'
@@ -61,7 +63,7 @@ function GetMember() {
             <div style={memberId === null ? { display: "none" } : {}}>
                 <div className="member-profile-content" id="profile@member" style={memberId === null ? { display: "none" } : {}}>
                     <div className="user-details-topbar">
-                        <img className="user-profileimage" src="./assets/images/Profile.png" alt=""></img>
+                        <img className="user-profileimage" src="../../../../assets/images/Profile.png" alt=""></img>
                         <div className="user-info">
                             <p className="user-name">{memberDetails?.userFullName}</p>
                             <p className="user-id">{memberDetails?.userType === "Student" ? memberDetails?.admissionId : memberDetails?.employeeId}</p>
@@ -108,17 +110,6 @@ function GetMember() {
                                 </p>
                             </div>
                         </div>
-                        <div className="specific-right">
-                            <div style={{ display: "flex", flexDirection: "column", flex: "0.5" }}>
-                                <p style={{ fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}><b>Points</b></p>
-                                <p style={{ fontSize: "25px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", marginTop: "15px" }}>540</p>
-                            </div>
-                            <div className="dashboard-title-line"></div>
-                            <div style={{ display: "flex", flexDirection: "column", flex: "0.5" }}>
-                                <p style={{ fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}><b>Rank</b></p>
-                                <p style={{ fontSize: "25px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", marginTop: "15px" }}>{memberDetails?.points}</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -130,19 +121,21 @@ function GetMember() {
                             <th>Book-Name</th>
                             <th>From Date</th>
                             <th>To Date</th>
+                            <th>Returned Date</th>
                             <th>Fine</th>
                         </tr>
                         {
-                            memberDetails?.activeTransactions?.filter((data) => {
+                            memberDetails?.transactions?.filter((data) => {
                                 return data.transactionType === "Issued"
                             }).map((data, index) => {
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{data.bookName}</td>
-                                        <td>{data.fromDate}</td>
-                                        <td>{data.toDate}</td>
-                                        <td>{(Math.floor((Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000)) <= 0 ? 0 : (Math.floor((Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000)) * 10}</td>
+                                        <td>{data.bookId.bookName}</td>
+                                        <td>{new Date(data.fromDate).toISOString().split('T')[0]}</td>
+                                        <td>{new Date(data.toDate).toISOString().split('T')[0]}</td>
+                                        <td>{new Date(data.returnDate).toISOString().split('T')[0]}</td>
+                                        <td>{data.fine}</td>
                                     </tr>
                                 )
                             })
@@ -160,13 +153,13 @@ function GetMember() {
                             <th>To</th>
                         </tr>
                         {
-                            memberDetails?.activeTransactions?.filter((data) => {
+                            memberDetails?.transactions?.filter((data) => {
                                 return data.transactionType === "Reserved"
                             }).map((data, index) => {
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{data.bookName}</td>
+                                        <td>{data.bookId.bookName}</td>
                                         <td>{data.fromDate}</td>
                                         <td>{data.toDate}</td>
                                     </tr>
@@ -186,14 +179,14 @@ function GetMember() {
                             <th>Return Date</th>
                         </tr>
                         {
-                            memberDetails?.prevTransactions?.map((data, index) => {
+                            memberDetails?.transactions?.map((data, index) => {
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{data.bookName}</td>
-                                        <td>{data.fromDate}</td>
-                                        <td>{data.toDate}</td>
-                                        <td>{data.returnDate}</td>
+                                        <td>{data.bookId.bookName}</td>
+                                        <td>{new Date(data.fromDate).toISOString().split('T')[0]}</td>
+                                        <td>{new Date(data.toDate).toISOString().split('T')[0]}</td>
+                                        <td>{data?.returnDate ? new Date(data?.returnDate).toISOString().split('T')[0] : 'Not returned yet'}</td>
                                     </tr>
                                 )
                             })

@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/User.js";
+import BookTransaction from "../models/BookTransaction.js";
 
 const router = express.Router()
 
@@ -18,14 +19,19 @@ router.get("/allusers", async (req, res) => {
 /* Getting user by id */
 router.get("/getuser/:id", async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).populate("activeTransactions").populate("prevTransactions")
-        const { password, updatedAt, ...other } = user._doc;
-        res.status(200).json(other);
+        const user = await User.findById(req.params.id).populate({
+            path: 'transactions',
+            populate: {
+                path: 'bookId',
+                model: 'Book'
+            }
+        });
+        res.status(200).json(user);
     }
     catch (err) {
-        return res.status(500).json(err);
+        return res.status(500).json({ error: err.message });
     }
-})
+});
 
 /* Getting all members in the library */
 router.get("/allmembers", async (req, res) => {

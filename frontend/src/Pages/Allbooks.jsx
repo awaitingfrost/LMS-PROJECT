@@ -4,10 +4,20 @@ import "./Allbooks.css";
 import axios from "axios";
 import { Button, Input } from "semantic-ui-react";
 import SelectLabels from "../common/Select";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import MyDocument from "../helpers/getReport";
+import { useNavigate } from "react-router-dom";
 
-const BookCard = ({ bookName, author, alternateTitle, book_image }) => {
+let books;
+
+const BookCard = ({ _id, bookName, author, alternateTitle, book_image }) => {
+  const navigate = useNavigate();
+
+  const onClick = (id) => {
+    navigate(`${id}`);
+  };
   return (
-    <div className="book-card">
+    <div className="book-card" onClick={() => onClick(_id)}>
       <img
         src={book_image ?? Bookimage}
         alt="Books"
@@ -32,7 +42,7 @@ function Allbooks({ setToastMessage, setToast }) {
     const fetchAllUsers = async () => {
       try {
         const response = await axios.get(`${API_URL}api/users/allusers`);
-        setAllUsers([...response.data, { _id: 'none', userFullName: 'None' }])
+        setAllUsers([...response.data, { _id: 'none', userFullName: 'All' }])
       } catch (err) {
         console.error("Failed to fetch books:", err);
       }
@@ -40,16 +50,20 @@ function Allbooks({ setToastMessage, setToast }) {
     fetchAllUsers()
   }, [])
 
-  useEffect(() => {
-    const fetchAllBooks = async () => {
-      try {
-        const response = await axios.get(`${API_URL}api/books/allbooks`);
-        setAllBooks(response.data);
-        setRecentAddedBooks(response.data.slice(0, 5));
-      } catch (err) {
-        console.error("Failed to fetch books:", err);
-      }
+  const [recentAddedBooks, setRecentAddedBooks] = useState([])
+
+  const fetchAllBooks = async () => {
+    try {
+      const response = await axios.get(`${API_URL}api/books/allbooks`);
+      setAllBooks(response.data);
+      books = response.data
+      setRecentAddedBooks(response.data.slice(0, 15));
+    } catch (err) {
+      console.error("Failed to fetch books:", err);
     }
+  }
+  useEffect(() => {
+
     fetchAllBooks()
   }, []);
 
@@ -68,7 +82,6 @@ function Allbooks({ setToastMessage, setToast }) {
     }
   }
 
-  const [recentAddedBooks, setRecentAddedBooks] = useState([])
 
   const handleDateFilter = (e) => {
     e.preventDefault();
@@ -96,6 +109,8 @@ function Allbooks({ setToastMessage, setToast }) {
   })
 
   const [userId, setUserId] = React.useState('');
+  const [keyword, setKeyword] = React.useState('');
+
   useEffect(() => {
     const fetchBookByUserId = async () => {
       if (userId) {
@@ -113,11 +128,26 @@ function Allbooks({ setToastMessage, setToast }) {
     }
     fetchBookByUserId()
   }, [userId])
+  useEffect(() => {
+    if (keyword === '') { fetchAllBooks() } else {
+      const searchBooks = allBooks.filter(book => book.bookName.toLowerCase().includes(keyword.toLowerCase()))
+      setAllBooks(searchBooks)
+    }
+
+  }, [keyword])
+
+
+
 
   return (
     <div className="books-page">
       <div className="page-header">
         <p className="dashboard-option-title">Books List</p>
+        <form onSubmit={(e) => {
+          e.preventDefault()
+        }}>
+          <input name="searchWord" type='search' placeholder="search" height={'50px'} onChange={(e) => setKeyword(e.target.value)} className="p-3 border-black"></input>
+        </form>
         <div className="form-header-filter">
           <form onSubmit={handleDateFilter} className="filter-form">
             <div className="">
@@ -146,11 +176,27 @@ function Allbooks({ setToastMessage, setToast }) {
         }
       </div>
       <div>
-        <p className="dashboard-option-title">Recently Added Books</p>
+        <div className="form-header-filter">
+          <p className="dashboard-option-title">Recently Added Books</p>
+          <PDFDownloadLink
+            document={
+              <MyDocument
+                username={"System Admin"}
+                reportData={recentAddedBooks}
+                reportTitle="All Book Report"
+                type="book"
+                tableHeader={['S.No', 'Book Name', 'Author Name', 'Added Date']}
+              />
+            }
+          >
+            <Button className='mt-4'>Generate Report</Button>
+          </PDFDownloadLink>
+        </div>
         <table className='admindashboard-table'>
           <tr>
             <th>S.No</th>
             <th>Book Name</th>
+            <th>Author Name</th>
             <th>Added Date</th>
             <th>Actions</th>
           </tr>
@@ -160,7 +206,8 @@ function Allbooks({ setToastMessage, setToast }) {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{book.bookName}</td>
-                  <td>{book.createdAt.substring(0, 10)}</td>
+                  <td>{book.author}</td>
+                  <td>{book.createdAt.slice(0, 10)}</td>
                   <td><button onClick={() => removeBook(book._id)} style={{ color: "red" }}>delete</button></td>
                 </tr>
               )

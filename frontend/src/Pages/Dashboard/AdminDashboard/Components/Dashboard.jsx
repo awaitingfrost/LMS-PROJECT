@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import "../Dashboard.css"
 import Charts from "./Chart.jsx"
-import axios from "axios"
 
 
 const CardItem = ({ title, count }) => {
@@ -17,33 +16,23 @@ const CardItem = ({ title, count }) => {
     )
 }
 
-function Dasboard() {
-    const API_URL = process.env.REACT_APP_API_URL
+function Dasboard({ data, type = 'admin' }) {
 
-    const [data, setData] = useState(null);
-
-    const fetchData = async () => {
-        await axios.get(API_URL + "api/dashboard/dashboard-counts")
-            .then(res => {
-                setData(res.data)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-    useEffect(() => {
-        fetchData();
-    }, [])
     return (
         <div className="container">
             <div className="header__title">
                 Dashboard
             </div>
+            <div className="dashboard-title-line"></div>
             <div className="card__list">
-                <CardItem title={"Total Members"} count={data?.user} />
-                <CardItem title={"Total Books"} count={data?.book} />
-                <CardItem title={"Total Transaction"} count={data?.transaction} />
+                {type === 'admin' && <CardItem title={"Total Members"} count={data?.user ?? 0} />}
+                <CardItem title={"Total Books"} count={data?.book ?? 0} />
+                <CardItem title={"Total Transaction"} count={data?.transaction ?? 0} />
+                {type === 'admin' && <CardItem title={"Total Authers"} count={data?.auther ?? 0} />}
+                {type === 'admin' && <CardItem title={"Total Categories"} count={data?.categories ?? 0} />}
+                <CardItem title={"Total Fine"} count={`Rs ${data?.fine ?? 0}`} />
+                <CardItem title={"Total Issued Books"} count={data?.issued ?? 0} />
+
             </div>
             <div className="chart__container">
                 <Charts />

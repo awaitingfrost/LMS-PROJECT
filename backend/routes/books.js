@@ -46,13 +46,28 @@ router.get("/userid", async (req, res) => {
 /* Get all books in the db */
 router.get("/allbooks", async (req, res) => {
     const { startDate, endDate } = req.query;
-    let query = {};
+    let query = {}
+
     if (startDate && endDate) {
         query.createdAt = {
             $gte: new Date(startDate),
-            $lte: new Date(endDate)
+            $lte: new Date(endDate),
         };
     }
+    try {
+        const books = await Book.find(query).sort({ _id: -1 });
+        res.status(200).json(books);
+    } catch (err) {
+        return res.status(504).json(err);
+    }
+});
+
+/* Get avaliable books for reserve in the db */
+router.get("/avaliableBooks", async (req, res) => {
+    let query = {
+        bookCountAvailable: { $gte: 1 }
+    };
+
     try {
         const books = await Book.find(query).sort({ _id: -1 });
         res.status(200).json(books);
@@ -89,6 +104,7 @@ router.post("/addbook", upload.single('bookImage'), async (req, res) => {
 
     const imageUrl = `${req.protocol}://${req.get('host')}/public/uploads/${req?.file?.filename}`;
     if (req.body.isAdmin) {
+        console.log(req.body.bookSummary, 'test')
         try {
             const newbook = await new Book({
                 bookName: req.body.bookName,
@@ -97,10 +113,12 @@ router.post("/addbook", upload.single('bookImage'), async (req, res) => {
                 bookCountAvailable: req.body.bookCountAvailable,
                 language: req.body.language,
                 publisher: req.body.publisher,
+                bookSummary: req.body.bookSummary,
                 user_id: req.body.userId,
                 bookStatus: req.body.bookSatus,
                 categories: req.body.categories,
                 book_image: imageUrl,
+                totalCopies: req.body.bookCountAvailable,
             })
             const book = await newbook.save()
             await BookCategory.updateMany({ '_id': book.categories }, { $push: { books: book._id } });
@@ -145,5 +163,6 @@ router.delete("/removebook/:id", async (req, res) => {
         return res.status(504).json(err);
     }
 })
+
 
 export default router

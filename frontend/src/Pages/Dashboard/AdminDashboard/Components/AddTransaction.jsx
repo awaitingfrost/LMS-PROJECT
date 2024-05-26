@@ -1,23 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react'
-import "../AdminDashboard.css"
-import axios from "axios"
-import { AuthContext } from '../../../../Context/AuthContext'
-import { Button, Dropdown } from 'semantic-ui-react'
+import axios from "axios";
+import moment from "moment";
+import React, { useEffect, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment"
-import { PDFDownloadLink } from '@react-pdf/renderer'
-import { MyDocument } from '../../../../helpers/getReport'
+import { Button, Dropdown } from 'semantic-ui-react';
+import "../AdminDashboard.css";
 
 
-function AddTransaction({ setToastMessage, setToast, setOpen }) {
+function AddTransaction({ setToastMessage, setToast }) {
 
     const API_URL = process.env.REACT_APP_API_URL
     const [isLoading, setIsLoading] = useState(false)
-    const { user } = useContext(AuthContext)
 
     const [borrowerId, setBorrowerId] = useState("")
-    const [borrowerDetails, setBorrowerDetails] = useState([])
     const [bookId, setBookId] = useState("")
     const [allMembers, setAllMembers] = useState([])
     const [allBooks, setAllBooks] = useState([])
@@ -28,88 +23,36 @@ function AddTransaction({ setToastMessage, setToast, setOpen }) {
     const [toDate, setToDate] = useState(null)
     const [toDateString, setToDateString] = useState(null)
 
-    const transactionTypes = [
-        { value: 'Reserved', text: 'Reserve' },
-        { value: 'Issued', text: 'Issue' }
-    ]
-    const [transactionType, setTransactionType] = useState("")
-
-
     const addTransaction = async (e) => {
         e.preventDefault()
         setIsLoading(true)
-        if (bookId !== "" && borrowerId !== "" && transactionType !== "" && fromDate !== null && toDate !== null) {
-            const borrower_details = await axios.get(API_URL + "api/users/getuser/" + borrowerId)
-            const book_details = await axios.get(API_URL + "api/books/getbook/" + bookId)
 
-
-            if ((book_details.data.bookCountAvailable > 0 && (transactionType === "Issued" || transactionType === "Reserved")) || (book_details.data.bookCountAvailable === 0 && transactionType === "Reserved")) {
-                const transactionData = {
-                    bookId: bookId,
-                    borrowerId: borrowerId,
-                    borrowerName: borrower_details.data.userFullName,
-                    bookName: book_details.data.bookName,
-                    transactionType: transactionType,
-                    fromDate: fromDateString,
-                    toDate: toDateString,
-                    isAdmin: user.isAdmin,
-                    userId: borrowerId,
-                }
-                try {
-                    const response = await axios.post(API_URL + "api/transactions/add-transaction", transactionData)
-                    await axios.put(API_URL + `api/users/${response.data._id}/move-to-activetransactions`, {
-                        userId: borrowerId,
-                        isAdmin: user.isAdmin
-                    })
-                    await axios.put(API_URL + "api/books/updatebook/" + bookId, {
-                        isAdmin: user.isAdmin,
-                        bookCountAvailable: book_details.data.bookCountAvailable - 1
-                    })
-
-                    setToastMessage('Transaction Added Successfully 🎉')
-                    setToast(true)
-                    setOpen(false)
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                }
-                catch (err) {
-                    setToastMessage('Error Adding Transaction')
-                    setToast(true)
-                    setOpen(false)
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                }
+        if (bookId !== "" && borrowerId !== "" && fromDate !== null && toDate !== null) {
+            const transactionData = {
+                bookId: bookId,
+                borrowerId: borrowerId,
+                fromDate: fromDateString,
+                toDate: toDateString,
             }
-            else {
-                setToastMessage('This book is not avaliable')
-                setToast(true)
-            }
-        }
-        else {
-            setToastMessage('This book is not avaliable')
-            setToast(true)
-        }
-        setIsLoading(false)
-    }
-
-
-    useEffect(() => {
-        const getBorrowerDetails = async () => {
             try {
-                if (borrowerId !== "") {
-                    const response = await axios.get(API_URL + "api/users/getuser/" + borrowerId)
-                    setBorrowerDetails(response.data)
-                }
+                await axios.post(API_URL + "api/transactions/add-transaction", transactionData)
+                setToastMessage('Transaction Added Successfully 🎉')
+                setToast(true)
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             }
             catch (err) {
-                console.log("Error in getting borrower details")
+                setToastMessage('Error Adding Transaction')
+                setToast(true)
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
             }
         }
-        getBorrowerDetails()
-    }, [API_URL, borrowerId])
 
+    }
 
     useEffect(() => {
         const getMembers = async () => {
@@ -127,10 +70,12 @@ function AddTransaction({ setToastMessage, setToast, setOpen }) {
         getMembers()
     }, [API_URL])
 
+    const [bookCounts, setCount] = useState();
 
     useEffect(() => {
         const getallBooks = async () => {
-            const response = await axios.get(API_URL + "api/books/allbooks")
+            const response = await axios.get(API_URL + "api/books/avaliableBooks")
+            setCount(response.data)
             const allbooks = await response.data.map(book => (
                 { value: `${book._id}`, text: `${book.bookName}` }
             ))
@@ -138,7 +83,6 @@ function AddTransaction({ setToastMessage, setToast, setOpen }) {
         }
         getallBooks()
     }, [API_URL])
-
 
     return (
         <div>
@@ -155,51 +99,6 @@ function AddTransaction({ setToastMessage, setToast, setOpen }) {
                         onChange={(event, data) => setBorrowerId(data.value)}
                     />
                 </div>
-                <table className="admindashboard-table shortinfo-table" style={borrowerId === "" ? { display: "none" } : {}}>
-                    <tr>
-                        <th>Name</th>
-                        <th>Issued</th>
-                        <th>Reserved</th>
-                        <th>Points</th>
-                    </tr>
-                    <tr>
-                        <td>{borrowerDetails.userFullName}</td>
-                        <td>{borrowerDetails.activeTransactions?.filter((data) => {
-                            return data.transactionType === "Issued" && data.transactionStatus === "Active"
-                        }).length
-                        }
-                        </td>
-                        <td>{borrowerDetails.activeTransactions?.filter((data) => {
-                            return data.transactionType === "Reserved" && data.transactionStatus === "Active"
-                        }).length
-                        }
-                        </td>
-                        <td>{borrowerDetails.points}</td>
-                    </tr>
-                </table>
-                <table className="admindashboard-table shortinfo-table" style={borrowerId === "" ? { display: "none" } : {}}>
-                    <tr>
-                        <th>Book-Name</th>
-                        <th>Transaction</th>
-                        <th>From Date<br /><span style={{ fontSize: "10px" }}>[MM/DD/YYYY]</span></th>
-                        <th>To Date<br /><span style={{ fontSize: "10px" }}>[MM/DD/YYYY]</span></th>
-                        <th>Fine</th>
-                    </tr>
-                    {
-                        borrowerDetails.activeTransactions?.filter((data) => { return data.transactionStatus === "Active" }).map((data, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{data.bookName}</td>
-                                    <td>{data.transactionType}</td>
-                                    <td>{data.fromDate}</td>
-                                    <td>{data.toDate}</td>
-                                    <td>{(Math.floor((Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000)) <= 0 ? 0 : (Math.floor((Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000)) * 10}</td>
-                                </tr>
-                            )
-                        })
-                    }
-                </table>
-
                 <label className="transaction-form-label" htmlFor="bookName">Book Name<span className="required-field">*</span></label><br />
                 <div className='semanticdropdown'>
                     <Dropdown
@@ -217,19 +116,17 @@ function AddTransaction({ setToastMessage, setToast, setOpen }) {
                         <th>Available Coipes</th>
                         <th>Reserved</th>
                     </tr>
+                    <tr>
+                        {console.log(bookCounts?.find(book => book))}
+                        <td>
+                            {bookCounts?.find(book => book._id === bookId)?.bookCountAvailable}
+                        </td>
+                        <td>
+                            {bookCounts?.find(book => book._id === bookId)?.totalCopies - bookCounts?.find(book => book._id === bookId)?.bookCountAvailable}
+                        </td>
+                    </tr>
                 </table>
 
-                <label className="transaction-form-label" htmlFor="transactionType">Transaction Type<span className="required-field">*</span></label><br />
-                <div className='semanticdropdown'>
-                    <Dropdown
-                        placeholder='Select Transaction'
-                        fluid
-                        selection
-                        value={transactionType}
-                        options={transactionTypes}
-                        onChange={(event, data) => setTransactionType(data.value)}
-                    />
-                </div>
                 <br />
 
                 <label className="transaction-form-label" htmlFor="from-date">From Date<span className="required-field">*</span></label><br />
@@ -256,21 +153,6 @@ function AddTransaction({ setToastMessage, setToast, setOpen }) {
                     Submit
                 </Button>
             </form>
-
-            {/* <div>
-                <PDFDownloadLink
-                    document={
-                        <MyDocument
-                            username={"System Admin"}
-                            ReportData={recentTransactions}
-                        />
-                    }
-                >
-                    <button style={{
-                        marginLeft: "20px"
-                    }}>Generate Report</button>
-                </PDFDownloadLink>
-            </div> */}
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import { React, useState, useContext, Suspense } from 'react'
-import { Link } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import './Header.css'
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -19,17 +19,17 @@ function Header() {
     return (
         <div className="header">
             <div className="logo-nav">
-                <Link to='/'>
+                <Navigate to='/'>
                     <a href="#home">LIBRARY</a>
-                </Link>
+                </Navigate>
             </div>
             <div className='nav-right'>
                 <ul className={menutoggle ? "nav-options active" : "nav-options"}>
                     <li className="option" >
                         {!user ?
-                            <Link className='cursur-pointer' to='/signin'>
+                            <Navigate className='cursur-pointer' to='/signin'>
                                 SignIn
-                            </Link>
+                            </Navigate>
                             : <>
                             </>
                         }
@@ -37,9 +37,9 @@ function Header() {
                     {/* <li className='option'>
                         {
                             !user ?
-                                <Link className='cursur-pointer' to="/books">
+                                <Navigate className='cursur-pointer' to="/books">
                                     Books
-                                </Link>
+                                </Navigate>
                                 : <></>
                         }
                     </li> */}

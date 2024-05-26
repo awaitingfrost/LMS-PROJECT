@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Button } from 'semantic-ui-react';
 import axios from 'axios';
 import SelectLabels from '../../../../common/Select';
+import Modal from '../../../../common/Modal'
+import { Box } from '@mui/material';
+import MyDocument from '../../../../helpers/getReport'
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
 const AllTransations = ({ setToastMessage, setToast }) => {
 
@@ -13,7 +17,7 @@ const AllTransations = ({ setToastMessage, setToast }) => {
     const fetchAllUsers = async () => {
       try {
         const response = await axios.get(`${API_URL}api/users/allusers`);
-        setAllUsers([...response.data, { _id: 'none', userFullName: 'None' }])
+        setAllUsers([...response.data, { _id: 'none', userFullName: 'All' }])
       } catch (err) {
         console.error("Failed to fetch books:", err);
       }
@@ -29,7 +33,17 @@ const AllTransations = ({ setToastMessage, setToast }) => {
     const getTransactions = async () => {
       try {
         const response = await axios.get(API_URL + "api/transactions/all-transactions")
-        setRecentTransactions(response.data.slice(0, 10))
+        const value = response.data.splice(0, 15).map(e => ({
+          _id: e._id,
+          bookName: e.bookId.bookName,
+          borrowerName: e.borrowerId.userFullName,
+          transactionDate: e.createdAt,
+          returnedDate: e.returnDate,
+          borrowerId: e.borrowerId._id,
+          transactionType: e.transactionType
+        })
+        )
+        setRecentTransactions(value)
       }
       catch (err) {
         console.log("Error in fetching transactions")
@@ -73,6 +87,18 @@ const AllTransations = ({ setToastMessage, setToast }) => {
     fetchTransactionsByUserId()
   }, [userId, API_URL])
 
+  const handleReturnBook = async (transaction) => {
+    await axios.post(API_URL + `api/transactions/update-transaction/${transaction._id}`, {
+      bookId: transaction._id,
+      borrowerId: transaction.borrowerId
+    })
+
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000)
+  }
+
+
   return (
     <div>
       <div className='page-header'>
@@ -81,6 +107,19 @@ const AllTransations = ({ setToastMessage, setToast }) => {
           <Button className="mt-4">
             <SelectLabels userList={allUserList} userId={userId} setUserId={setUserId} />
           </Button>
+          <PDFDownloadLink
+            document={
+              <MyDocument
+                username={"System Admin"}
+                reportData={recentTransactions}
+                reportTitle="All Transaction Report"
+                type="transaction"
+                tableHeader={['S.No', 'Book Name', 'Borrower Name', 'Transaction Date', 'Returned Date']}
+              />
+            }
+          >
+            <Button className='mt-4'>Generate Report</Button>
+          </PDFDownloadLink>
         </div>
       </div>
       <div className="dashboard-title-line"></div>
@@ -94,7 +133,8 @@ const AllTransations = ({ setToastMessage, setToast }) => {
               <th>S.No</th>
               <th>Book Name</th>
               <th>Borrower Name</th>
-              <th>Date</th>
+              <th>Transaction Date</th>
+              <th>Returned Date</th>
               <th>Actions</th>
             </tr>
             {
@@ -104,8 +144,16 @@ const AllTransations = ({ setToastMessage, setToast }) => {
                     <td>{index + 1}</td>
                     <td>{transaction.bookName}</td>
                     <td>{transaction.borrowerName}</td>
-                    <td>{transaction.updatedAt.slice(0, 10)}</td>
-                    <td><button onClick={() => removeTransaction(transaction._id)} style={{ color: "red" }}>Delete</button></td>
+                    <td>{transaction.transactionDate.slice(0, 10)}</td>
+                    <td>
+                      {transaction?.returnedDate ? new Date(transaction.returnedDate).toISOString().split('T')[0] : 'Not returned yet'}
+                    </td>
+                    <td>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <button onClick={() => removeTransaction(transaction._id)} style={{ color: "red" }}>Delete</button>
+                        {transaction.transactionType !== 'Issued' && <Modal handleSubmit={() => handleReturnBook(transaction)} transaction={transaction} />}
+                      </Box>
+                    </td>
                   </tr>
                 )
               })
@@ -113,7 +161,7 @@ const AllTransations = ({ setToastMessage, setToast }) => {
           </table>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

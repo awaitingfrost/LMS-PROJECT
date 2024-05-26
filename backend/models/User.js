@@ -56,11 +56,7 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    activeTransactions: [{
-        type: mongoose.Types.ObjectId,
-        ref: "BookTransaction"
-    }],
-    prevTransactions: [{
+    transactions: [{
         type: mongoose.Types.ObjectId,
         ref: "BookTransaction"
     }],

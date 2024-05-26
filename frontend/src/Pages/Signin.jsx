@@ -1,16 +1,15 @@
 import React, { useContext, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 import './Signin.css';
 import axios from 'axios';
 import { AuthContext } from '../Context/AuthContext.js';
-import Switch from '@material-ui/core/Switch';
 
 function Signin() {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { dispatch } = useContext(AuthContext);
-  const history = useHistory();
+  const navigate = useNavigate()
 
   const API_URL = 'http://localhost:5000/';
 
@@ -20,9 +19,9 @@ function Signin() {
       const res = await axios.post(`${API_URL}api/auth/signin`, postData);
       dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
       if (res.data.isAdmin) {
-        history.push('/dashboard@admin');
+        return navigate('/admin');
       } else {
-        history.push('/dashboard@member')
+        return navigate('/member')
       }
     } catch (err) {
       dispatch({ type: 'LOGIN_FAILURE', payload: err });
@@ -30,13 +29,13 @@ function Signin() {
     }
   };
 
-  const handleForm = (e) => {
+  const handleForm = async (e) => {
     e.preventDefault();
     const postData = {
       username: loginId,
       password: password,
     };
-    loginCall(postData);
+    await loginCall(postData);
   };
 
   const handleGoogleSignIn = () => {

@@ -2,11 +2,12 @@
     font-weight: bold;
     font-size: 32px;
     padding: 10px 20px;
-    color: rgb(181, 101, 29);
 }
 
 .card__list {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
     padding: 10px 20px;
     justify-content: space-between;
 }
@@ -16,7 +17,7 @@
     padding: 10px 20px;
     border-radius: 4px;
     box-shadow: 1px 2px 5px black;
-    background-color: rgb(181, 101, 29);
+    background-color: #22617B;
     color: white;
     text-align: center;
 }

@@ -29,6 +29,14 @@ const BookSchema = new mongoose.Schema({
         type: Number,
         require: true
     },
+    totalCopies: {
+        type: Number,
+        require: true
+    },
+    bookSummary: {
+        type: String,
+        require: true
+    },
     user_id: {
         type: mongoose.Types.ObjectId,
         ref: "users"

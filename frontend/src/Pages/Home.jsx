@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import WelcomeBox from '../Components/WelcomeBox';
+import { AuthContext } from '../Context/AuthContext';
+import { redirect } from 'react-router-dom';
+import Signin from './Signin';
 
 function Home() {
+  const { user } = useContext(AuthContext);
+
+  user ? (user?.isAdmin ? redirect('/admin') : redirect('/member')) : <Signin />
+
   const containerStyle = {
     display: 'flex',
     justifyContent: 'center',

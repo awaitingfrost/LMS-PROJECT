@@ -11,8 +11,8 @@
 /* Sidebar */
 
 .dashboard-options {
-  background-color: rgb(181, 101, 29);
-  color: rgb(181, 101, 29);
+  background-color: #22617B;
+  color: #22617B;
   display: flex;
   flex-direction: column;
   flex: 0.25;
@@ -46,7 +46,7 @@
 }
 
 .dashboard-option:hover {
-  color: rgb(181, 101, 29);
+  color: #22617B;
   border-left: 5px solid rgb(253, 253, 253);
   transition: all 0.5s ease;
   background-color: #ffffff;
@@ -54,7 +54,7 @@
 
 
 .dashboard-option.clicked {
-  color: rgb(181, 101, 29);
+  color: #22617B;
   border-left: 5px solid rgb(255, 255, 255);
   transition: all 0.5s ease;
   background-color: #ffffff;
@@ -245,7 +245,7 @@
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: rgb(181, 101, 29);
+  background-color: #22617B;
   color: white;
 }
 

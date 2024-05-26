@@ -22,7 +22,7 @@
     "react-datetime": "^3.0.4",
     "react-dom": "^18.2.0",
     "react-multi-select-component": "^4.0.3",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.23.1",
     "react-scripts": "^5.0.1",
     "recharts": "^2.12.4",
     "semantic-ui-css": "^2.5.0",

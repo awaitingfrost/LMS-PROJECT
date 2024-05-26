@@ -1,25 +1,15 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const BookTransactionSchema = new mongoose.Schema({
     bookId: {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: "Book",
         require: true
     },
-    borrowerId: { //EmployeeId or AdmissionId
-        type: String,
+    borrowerId: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
         require: true
-    },
-    bookName: {
-        type: String,
-        require: true
-    },
-    borrowerName: {
-        type: String,
-        require: true
-    },
-    transactionType: { //Issue or Reservation
-        type: String,
-        require: true,
     },
     fromDate: {
         type: String,
@@ -30,17 +20,20 @@ const BookTransactionSchema = new mongoose.Schema({
         require: true,
     },
     returnDate: {
-        type: String
+        type: String,
+    },
+    fine: {
+        type: Number,
+        default: 0
     },
     transactionStatus: {
         type: String,
         default: "Active"
     },
-    userId:
-    {
-        type: mongoose.Types.ObjectId,
-        ref: "Book"
-    }
+    transactionType: {
+        type: String,
+        require: true,
+    },
 },
     {
         timestamps: true

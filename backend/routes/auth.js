@@ -45,18 +45,12 @@ router.post("/signin", async (req, res) => {
       res.status(200).json({ isAdmin: true, user: { user_id: user[0]._id, username: req?.body?.username, role: "superadmin" }, success: true });
     } else {
       let user = await User.findOne({
-        employeeId: req.body.username,
+        email: req.body.username,
       })
-      if (!user) {
-        user = await User.findOne({
-          admissionId: req.body.username
-        })
-      }
-
-      !user && res.status(404).json("User not found");
-
       const validPass = await bcrypt.compare(req?.body?.password, user?.password);
       !validPass && res.status(400).json("Wrong Password");
+      !user && res.status(404).json("User not found");
+
 
       res.status(200).json(user);
     }

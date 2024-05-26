@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import AddMember from './AddMember';
-import GetMember from './GetMember';
-import Modals from '../../../../common/Modal';
-import { Button } from 'semantic-ui-react';
 import axios from 'axios';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import MyDocument from '../../../../helpers/getReport';
+import { Button } from 'semantic-ui-react';
 
-function AllMembers({ setToastMessage, setToast }) {
+function AllMembers() {
   const API_URL = process.env.REACT_APP_API_URL
-  const [open, setOpen] = useState(false);
 
   const [recentAddedMembers, setRecentAddedMembers] = useState([])
 
@@ -40,17 +38,24 @@ function AllMembers({ setToastMessage, setToast }) {
   }
   return (
     <div>
-      <Modals title={'Add Member'} open={open} setOpen={setOpen} close={() => setOpen(false)}>
-        <AddMember setOpen={setOpen} setToastMessage={setToastMessage} setToast={setToast} />
-      </Modals>
       <div className='page-header'>
         <p className="dashboard-option-title">Members List</p>
-        <Button className="mt-4" onClick={() => setOpen(true)} >
-          + Add Member
-        </Button>
+        <PDFDownloadLink
+          document={
+            <MyDocument
+              username={"System Admin"}
+              reportData={recentAddedMembers}
+              reportTitle="All Members Report"
+              type="member"
+              tableHeader={['S.No', 'Member Name', 'Member Type', 'Member Id',]}
+            />
+          }
+        >
+          <Button className='mt-4'>Generate Report</Button>
+        </PDFDownloadLink>
       </div>
       <div className="dashboard-title-line"></div>
-      <div>
+      <div className='mt-4'>
         <table className='admindashboard-table'>
           <tr>
             <th>S.No</th>
@@ -73,11 +78,6 @@ function AllMembers({ setToastMessage, setToast }) {
             })
           }
         </table>
-      </div>
-      <div>
-        <div className="dashboard-title-line"></div>
-        <p className='dashboard-option-title'>Get Member Details</p>
-        <GetMember />
       </div>
     </div>
   )

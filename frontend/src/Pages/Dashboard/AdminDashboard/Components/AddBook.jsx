@@ -4,7 +4,7 @@ import axios from "axios"
 import { AuthContext } from '../../../../Context/AuthContext'
 import { Button, Dropdown } from 'semantic-ui-react'
 
-const AddBook = ({ setOpen, setToast, setToastMessage }) => {
+const AddBook = ({ setToast, setToastMessage }) => {
 
     const API_URL = process.env.REACT_APP_API_URL
     const [isLoading, setIsLoading] = useState(false)
@@ -19,6 +19,7 @@ const AddBook = ({ setOpen, setToast, setToastMessage }) => {
     const [allCategories, setAllCategories] = useState([])
     const [selectedCategories, setSelectedCategories] = useState([])
     const [bookImage, setBookImage] = useState("")
+    const [bookSummary, setBookSummary] = useState("")
 
     useEffect(() => {
         const getAllCategories = async () => {
@@ -47,6 +48,7 @@ const AddBook = ({ setOpen, setToast, setToastMessage }) => {
         formData.append("alternateTitle", alternateTitle);
         formData.append("author", author);
         formData.append("bookCountAvailable", bookCountAvailable);
+        formData.append("bookSummary", bookSummary);
         formData.append("language", language);
         formData.append("publisher", publisher);
         formData.append("isAdmin", user.isAdmin);
@@ -68,7 +70,6 @@ const AddBook = ({ setOpen, setToast, setToastMessage }) => {
             if (response.status === 200) {
                 setToastMessage('Book Added Successfully 🎉')
                 setToast(true)
-                setOpen(false)
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -79,7 +80,6 @@ const AddBook = ({ setOpen, setToast, setToastMessage }) => {
         catch (err) {
             setToastMessage('Error Adding Book')
             setToast(true)
-            setOpen(false)
         }
         setIsLoading(false)
     }
@@ -88,8 +88,10 @@ const AddBook = ({ setOpen, setToast, setToastMessage }) => {
 
     return (
         <div>
-            <form className='addbook-form' onSubmit={addBook}>
+            <p className="dashboard-option-title">Add Books</p>
+            <div className="dashboard-title-line"></div>
 
+            <form className='addbook-form' onSubmit={addBook}>
                 <label className="addbook-form-label" htmlFor="bookName">Book Name<span className="required-field">*</span></label><br />
                 <input className="addbook-form-input" type="text" name="bookName" value={bookName} onChange={(e) => { setBookName(e.target.value) }} required></input><br />
 
@@ -104,6 +106,10 @@ const AddBook = ({ setOpen, setToast, setToastMessage }) => {
 
                 <label className="addbook-form-label" htmlFor="language">Language</label><br />
                 <input className="addbook-form-input" type="text" name="language" value={language} onChange={(e) => { setLanguage(e.target.value) }}></input><br />
+
+                <label className="addbook-form-label" htmlFor="bookSummary">Book Summary</label><br />
+                <textarea className="addbook-form-input" type="text" name="bookSummary" value={bookSummary} onChange={(e) => { setBookSummary(e.target.value) }}></textarea><br />
+
 
                 <label className="addbook-form-label" htmlFor="publisher">Publisher</label><br />
                 <input className="addbook-form-input" type="text" name="publisher" value={publisher} onChange={(e) => { setPublisher(e.target.value) }}></input><br />

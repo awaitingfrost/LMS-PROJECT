@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthContextProvider } from './Context/AuthContext'
 import 'semantic-ui-css/semantic.min.css'
+import { BrowserRouter, Routes } from 'react-router-dom';
 
 
 ReactDOM.createRoot(
@@ -14,8 +15,12 @@ ReactDOM.createRoot(
   .render(
     <React.StrictMode>
       <AuthContextProvider>
-        <App />
+        <BrowserRouter>
+
+          <App />
+        </BrowserRouter>
       </AuthContextProvider>
+
     </React.StrictMode>,
 
   );
